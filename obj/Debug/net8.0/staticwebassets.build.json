@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "3FKHOe5SDkqBaytOXzCPr2sBVfHpCLdVa5ThCHUkTKI=",
+  "Source": "BlazorWebChat",
+  "BasePath": "_content/BlazorWebChat",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "BlazorWebChat/wwwroot",
+      "Source": "BlazorWebChat",
+      "ContentRoot": "/home/mykhailo/Documents/Code/BlazorWebChat/wwwroot/",
+      "BasePath": "_content/BlazorWebChat",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

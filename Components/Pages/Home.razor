@@ -1,0 +1,63 @@
+@page "/"
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+@implements IAsyncDisposable
+@using Microsoft.AspNetCore.SignalR.Client
+
+<PageTitle>Blazor Chat</PageTitle>
+<h3>Blazor Chat</h3>
+<h6>Send a message!</h6>
+
+<input @bind="user" type="text" placeholder="Your name">
+<input @bind="message" type="text" placeholder="Your message">
+<button @onclick="SendMessage">Send Message</button>
+
+<ul>
+    @foreach (var m in messages) {
+        <li><strong>@m.user: </strong>@m.message</li>
+    }
+</ul>
+
+@code {
+    private HubConnection? hubConnection;
+    private List<ChatMessage> messages = new List<ChatMessage>();
+    private string user = string.Empty;
+    private string message = string.Empty;
+
+    protected override async Task OnInitializedAsync() {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
+            .Build();
+        
+        hubConnection.On<string, string>("ReceiveMessage", (user, message) => {
+            user = string.IsNullOrEmpty(user) ? "Unnamed User" : user;
+
+            messages.Insert(0, new ChatMessage {
+                user = user,
+                message = message
+            });
+
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    private async Task SendMessage() {
+        if (hubConnection is not null && !string.IsNullOrEmpty(message)) {
+            await hubConnection.SendAsync("SendMessage", user, message);
+            message = string.Empty;
+        }
+    }
+
+    public async ValueTask DisposeAsync() {
+        if (hubConnection is not null) {
+            await hubConnection.DisposeAsync();
+        }
+    }
+
+    public class ChatMessage {
+        public string user { get; set; } = string.Empty;
+        public string message { get; set; } = string.Empty;
+    }
+}
